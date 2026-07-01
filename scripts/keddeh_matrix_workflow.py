@@ -535,11 +535,12 @@ def script_full_workflow(output_dir: str = "reports") -> Dict[str, Any]:
                 "error": str(e),
             })
 
-    workflow_log["status"] = "COMPLETED"
+    failed_count = sum(1 for s in workflow_log["scripts_executed"] if s["status"] == "FAILED")
+    workflow_log["status"] = "COMPLETED" if failed_count == 0 else "COMPLETED_WITH_ERRORS"
     workflow_log["summary"] = {
         "total_scripts": len(scripts),
         "successful": sum(1 for s in workflow_log["scripts_executed"] if s["status"] == "SUCCESS"),
-        "failed": sum(1 for s in workflow_log["scripts_executed"] if s["status"] == "FAILED"),
+        "failed": failed_count,
     }
 
     output_file = output_path / "keddeh_workflow_complete.json"
