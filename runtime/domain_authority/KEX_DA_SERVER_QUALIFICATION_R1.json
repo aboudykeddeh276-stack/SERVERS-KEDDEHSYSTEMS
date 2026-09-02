@@ -1,0 +1,19 @@
+{
+  "zone": "braink.com.au",
+  "server_identities": [
+    "ns1.braink.com.au",
+    "ns2.braink.com.au"
+  ],
+  "checks": [
+    {"name":"braink.com.au","type":"SOA","transport":"UDP","flags":"0x8500","aa":true,"rcode":0,"answers":1,"authority":0,"bytes":121,"wire_sha256":"0b8f56fd3f73f4d6026e6f9a0beb3f8313101b6a1487190a114b8d7ef7e85ebd"},
+    {"name":"braink.com.au","type":"NS","transport":"UDP","flags":"0x8500","aa":true,"rcode":0,"answers":2,"authority":0,"bytes":119,"wire_sha256":"94d15906821c868733cca3d3caa6206eb32d1af14d74c442ed28234857501b6a"},
+    {"name":"ns1.braink.com.au","type":"A","transport":"UDP","flags":"0x8500","aa":true,"rcode":0,"answers":1,"authority":0,"bytes":68,"wire_sha256":"99f1ce0d03624eeab637542529292c9d7341579692d6ff9c21b8f248c586f2ae"},
+    {"name":"braink.com.au","type":"A","transport":"UDP","flags":"0x8500","aa":true,"rcode":0,"answers":1,"authority":0,"bytes":60,"wire_sha256":"d0846c857d949424d4098959c02f039e9c16564c86ac2b1e6e2c232e1e45a82d"},
+    {"name":"braink.com.au","type":"CAA","transport":"UDP","flags":"0x8500","aa":true,"rcode":0,"answers":1,"authority":0,"bytes":78,"wire_sha256":"35256171a66785a07db17e14b2fc456961190639ca634ad08bead1530c540030"},
+    {"name":"missing.braink.com.au","type":"A","transport":"UDP","flags":"0x8503","aa":true,"rcode":3,"answers":0,"authority":1,"bytes":129,"wire_sha256":"d2e174fc18b3e0d23d0ef56fc98a69c38c33537675919e257d486c7b40729c35"},
+    {"name":"braink.com.au","type":"NS","transport":"TCP","flags":"0x8500","aa":true,"rcode":0,"answers":2,"authority":0,"bytes":119,"wire_sha256":"94d15906821c868733cca3d3caa6206eb32d1af14d74c442ed28234857501b6a"}
+  ],
+  "state":"LOCAL_DELEGATION_READY_PROTOCOL_SURFACE",
+  "public_delegation":"NOT_APPLIED",
+  "public_reachability":"NOT_PROVEN"
+}
