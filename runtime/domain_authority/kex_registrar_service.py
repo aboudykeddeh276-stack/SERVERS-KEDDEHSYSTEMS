@@ -56,16 +56,42 @@ def get_zone(zone):
     if not r:return None
     keys=['zone','primary_ns','admin_rname','serial','refresh','retry','expire','minimum','owner_hash','status'];return dict(zip(keys,r))
 
-def find_zone(qname):
+def _zone_candidates(qname):
     q=qname.rstrip('.')
-    conn=_conn(); zones=[r[0] for r in conn.execute("SELECT zone FROM zones WHERE status='ACTIVE'").fetchall()];conn.close()
-    matches=[z for z in zones if q==z or q.endswith('.'+z)]
-    return max(matches,key=len) if matches else None
+    labels=q.split('.') if q else []
+    return ['.'.join(labels[i:]) for i in range(len(labels))]
+
+def find_zone(qname):
+    candidates=_zone_candidates(qname)
+    if not candidates:return None
+    conn=_conn()
+    try:
+        placeholders=','.join('?' for _ in candidates)
+        row=conn.execute(
+            f"SELECT zone FROM zones WHERE status='ACTIVE' AND zone IN ({placeholders}) ORDER BY length(zone) DESC LIMIT 1",
+            candidates
+        ).fetchone()
+        return row[0] if row else None
+    finally:
+        conn.close()
 
 def get_records(qname,rrtype):
-    q=qname.rstrip('.'); t=rrtype.upper(); z=find_zone(q)
-    if not z:return []
-    conn=_conn();rows=conn.execute("SELECT name,rrtype,value,ttl,priority FROM zone_records WHERE zone=? AND name=? AND rrtype=? AND status='ACTIVE'",(z,q,t)).fetchall();conn.close()
-    return [{'name':r[0],'type':r[1],'value':r[2],'ttl':r[3],'priority':r[4]} for r in rows]
+    q=qname.rstrip('.'); t=rrtype.upper(); candidates=_zone_candidates(q)
+    if not candidates:return []
+    conn=_conn()
+    try:
+        placeholders=','.join('?' for _ in candidates)
+        row=conn.execute(
+            f"SELECT zone FROM zones WHERE status='ACTIVE' AND zone IN ({placeholders}) ORDER BY length(zone) DESC LIMIT 1",
+            candidates
+        ).fetchone()
+        if not row:return []
+        rows=conn.execute(
+            "SELECT name,rrtype,value,ttl,priority FROM zone_records WHERE zone=? AND name=? AND rrtype=? AND status='ACTIVE'",
+            (row[0],q,t)
+        ).fetchall()
+        return [{'name':r[0],'type':r[1],'value':r[2],'ttl':r[3],'priority':r[4]} for r in rows]
+    finally:
+        conn.close()
 
 if __name__=='__main__': init_registrar_db()
