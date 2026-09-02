@@ -1,0 +1,6 @@
+{
+  "schema":"keddeh.adapter-contract/v1",
+  "required":["adapter_id","capabilities","timeout_ms","retry_policy","idempotency","rate_limit","circuit_breaker","telemetry","cost_model"],
+  "defaults":{"timeout_ms":10000,"retry_policy":{"max_attempts":3,"backoff":"exponential+jitter"},"circuit_breaker":{"failure_threshold":5,"cooldown_seconds":30}},
+  "rules":["idempotency required for mutating external operations","aggregate high-volume telemetry before BRAINK reasoning","record latency/network/cost/result class"]
+}
