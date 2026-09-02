@@ -1,0 +1,18 @@
+{
+  "schema":"kex.da.host-bind.r1",
+  "domain":"braink.com.au",
+  "bind":"0.0.0.0:53",
+  "host_private_ip":"172.26.39.227",
+  "state":"HOST_BOUND_PRIVATE_INTERFACE",
+  "public_routable_ip":"NOT_PRESENT_ON_CURRENT_HOST",
+  "parent_delegation":"NOT_APPLIED",
+  "tests":[
+    {"target":"127.0.0.1","transport":"udp","type":"NS","aa":true,"rcode":0,"answers":2,"sha256":"7567c5a60d632a0301a8f007f39f215f8ec4b41c426e1eec05019d96a7705c32"},
+    {"target":"172.26.39.227","transport":"udp","type":"NS","aa":true,"rcode":0,"answers":2,"sha256":"7567c5a60d632a0301a8f007f39f215f8ec4b41c426e1eec05019d96a7705c32"},
+    {"target":"172.26.39.227","transport":"tcp","type":"NS","aa":true,"rcode":0,"answers":2,"sha256":"7567c5a60d632a0301a8f007f39f215f8ec4b41c426e1eec05019d96a7705c32"},
+    {"target":"172.26.39.227","transport":"udp","type":"A","name":"missing.braink.com.au","aa":true,"rcode":3,"answers":0,"authority":1,"sha256":"b7ba395ee684f0bd2d71844bef19625dc7c4ac5cb234e663338238b3f53f39ff"}
+  ],
+  "next_real_dependency":"TWO_PUBLIC_ROUTABLE_DA_HOSTS_OR_PUBLIC_EDGE_NAT_EXPOSING_UDP_TCP_53",
+  "next_after_host":"REGISTRAR_UPDATE_NS1_NS2_AND_PARENT_AU_REGISTRY_DELEGATION",
+  "invalid_promotion":"private 172.26.39.227 must not be published as public glue"
+}
