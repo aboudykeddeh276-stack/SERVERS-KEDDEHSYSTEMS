@@ -1,0 +1,12 @@
+{
+  "schema":"keddeh.server-room-sector-map/v1",
+  "braink_runtime":"runtime://braink/sector-federation",
+  "server_room":"server-room://keddeh/ai-enterprise",
+  "server_sets":[
+    {"id":"HR_SERVER_SET","functions":["assignment","roles","approvals","accountability"]},
+    {"id":"AGENTIC_AI_SERVER_SET","functions":["continuation","observer-policy","mutation-arbitration","agent-runtime"]},
+    {"id":"MEMORY_SERVER_SET","functions":["ring1-addressability","ring2-backing","migration","checkpoint"]},
+    {"id":"DEPLOYMENT_SERVER_SET","functions":["production-actuator","release","rollback","readback"]}
+  ],
+  "replication_rule":"shared server sets are bound by capability, not copied per sector"
+}
