@@ -1,0 +1,8 @@
+{
+  "schema":"braink.substrate-binding.v1",
+  "canonical_code":"aboudykeddeh276-stack/BRAINK:enterprise/market_services",
+  "role":"runtime_host_and_server_inventory",
+  "mount":"KEX://SERVERS/MARKET-SERVICES",
+  "owns":["runtime_host_identity","service_port_binding","health_state","host_receipts"],
+  "does_not_own":["market_service_business_logic"]
+}
