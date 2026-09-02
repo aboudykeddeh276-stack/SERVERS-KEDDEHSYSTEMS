@@ -1,0 +1,12 @@
+{
+  "schema":"braink.market-services.server-runtime-binding.r2/v1",
+  "runtime":"RUN-MARKET-SERVICES-R2",
+  "canonical_code_repo":"aboudykeddeh276-stack/BRAINK",
+  "code_path":"enterprise/market_services",
+  "state_volume":"VFS://BRAINK/MARKET-SERVICES/R2",
+  "checkpoint":"VFS://BRAINK/MARKET-SERVICES/R2/CHECKPOINT/2",
+  "queue":"ADAPTER_CAPABILITY_CLOSURE",
+  "server_role":"host inventory and launch target selection",
+  "required_services":["process_supervisor","sqlite_state","proof_receipt_sink"],
+  "external_process_state":"UNVERIFIED_NOT_CLAIMED"
+}
