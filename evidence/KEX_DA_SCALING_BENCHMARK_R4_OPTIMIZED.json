@@ -1,0 +1,11 @@
+{
+  "results": [
+    {"zones":1,"queries":500,"qps":1897.660418494664,"median_ms":0.495502,"p95_ms":0.628975,"failures":0,"survived_500_malformed_datagrams":true},
+    {"zones":10,"queries":500,"qps":1951.8010079859534,"median_ms":0.4858975,"p95_ms":0.641573,"failures":0,"survived_500_malformed_datagrams":true},
+    {"zones":100,"queries":500,"qps":1786.5661140579605,"median_ms":0.5051865,"p95_ms":0.787815,"failures":0,"survived_500_malformed_datagrams":true},
+    {"zones":500,"queries":500,"qps":1818.6308877474235,"median_ms":0.489012,"p95_ms":0.679521,"failures":0,"survived_500_malformed_datagrams":true},
+    {"zones":1000,"queries":500,"qps":1970.6779128470594,"median_ms":0.48729900000000004,"p95_ms":0.619189,"failures":0,"survived_500_malformed_datagrams":true}
+  ],
+  "method_note":"Local Python UDP microbenchmark. 500 queries per zone-count point; malformed-datagram survival check after each point. Not an Internet-scale DNS capacity claim.",
+  "optimization":"zone lookup changed from fetching all active zones and Python suffix scanning to label-derived indexed zone candidates"
+}
