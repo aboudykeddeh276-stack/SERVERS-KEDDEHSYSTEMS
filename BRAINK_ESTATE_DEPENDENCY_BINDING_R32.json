@@ -1,0 +1,11 @@
+{
+  "schema":"braink.estate-dependency-binding.r32/v1",
+  "repository":"aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS",
+  "sector_role":"SERVER_RUNTIME",
+  "authority_state":"ACTIVE_CANONICAL",
+  "owned_mechanics":["server runtimes","listeners","host binding","authoritative DNS execution mechanics","server qualification"],
+  "required_upstream":["BRAINK R28 resident-root identity","BRAINK R24 physical-host trust boundary","KEX addressing","K-DRIVE persistence","GENERAL-GOVERNANCE- R32 gates"],
+  "invariants":["RESIDENT_ROOT_BEFORE_CARRIER_TRUST","CARRIER_IS_PROJECTION_NOT_IDENTITY","TRUST_BOUND_NE_PHYSICAL_VERIFIED","SERVER_AUTHORITY_NE_REGISTRAR_OR_PUBLIC_HOST_ALLOCATION"],
+  "external_promotion_requires":["authorised host execution","independent physical verification when claimed","external DNS/public endpoint readback when claimed"],
+  "status":"DEPENDENCY_BOUND_ACTIVE_AUTHORITY"
+}
