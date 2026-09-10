@@ -81,18 +81,26 @@ def _last_proof_root() -> str:
     with RECEIPT_LOG.open("rb") as fh:
         fh.seek(0, os.SEEK_END)
         pos = fh.tell() - 1
-        while pos > 0:
+        while pos >= 0:
             fh.seek(pos)
-            if fh.read(1) == b"\n" and pos < fh.tell():
+            if fh.read(1) != b"\n":
                 break
             pos -= 1
-        if pos > 0:
-            fh.seek(pos + 1)
-        else:
-            fh.seek(0)
-        line = fh.readline().strip()
+        if pos < 0:
+            return "0" * 64
+        end = pos + 1
+        while pos >= 0:
+            fh.seek(pos)
+            if fh.read(1) == b"\n":
+                pos += 1
+                break
+            pos -= 1
+        start = max(0, pos)
+        fh.seek(start)
+        line = fh.read(end - start).strip()
     try:
-        return str(json.loads(line).get("proof_root", "0" * 64))
+        root = str(json.loads(line).get("proof_root", ""))
+        return root if len(root) == 64 else "0" * 64
     except Exception:
         return "0" * 64
 
@@ -532,8 +540,9 @@ def main() -> int:
     if args.self_test:
         return self_test()
     if args.qualify_global_edge:
-        print(json.dumps(qualify_global_edge_env(), indent=2))
-        return 0 if qualify_global_edge_env()["qualified"] else 3
+        qualification = qualify_global_edge_env()
+        print(json.dumps(qualification, indent=2))
+        return 0 if qualification["qualified"] else 3
     if args.render_global_bgp:
         print(bgp_from_env(), end="")
         return 0
