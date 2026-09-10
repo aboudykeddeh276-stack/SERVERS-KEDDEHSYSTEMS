@@ -1,0 +1,67 @@
+name: Keddeh Network Activation
+
+on:
+  push:
+    paths:
+      - 'runtime/domain_authority/**'
+      - 'runtime/backbone/**'
+      - 'deploy/install_keddeh_backbone.sh'
+      - 'deploy/activate_keddeh_network_stack.sh'
+      - '.github/workflows/keddeh-network-activation.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-network-stack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile runtime
+        run: |
+          python -m py_compile runtime/domain_authority/kex_registrar_service.py
+          python -m py_compile runtime/domain_authority/kex_dns.py
+          python -m py_compile runtime/backbone/keddeh_mesh_backbone.py
+      - name: Backbone self-test
+        run: python runtime/backbone/keddeh_mesh_backbone.py --self-test
+      - name: Validate activation scripts
+        run: |
+          bash -n deploy/install_keddeh_backbone.sh
+          bash -n deploy/activate_keddeh_network_stack.sh
+      - name: Ephemeral DNS DA mesh integration test
+        env:
+          KEX_MESH_SECRET: ci-only-secret
+          KEX_NODE_ID: ci-alpha
+          KEX_MESH_BIND: 127.0.0.1
+          KEX_MESH_PORT: '16091'
+          KEX_DNS_BIND: 127.0.0.1
+          KEX_DNS_PORT: '19053'
+          KEX_HEARTBEAT_SEC: '1'
+          KEX_STALE_SEC: '3'
+        run: |
+          python runtime/backbone/keddeh_mesh_backbone.py > /tmp/keddeh-backbone.log 2>&1 &
+          PID=$!
+          trap 'kill $PID 2>/dev/null || true' EXIT
+          sleep 2
+          python - <<'PY'
+          import socket,struct,sys
+          sys.path.insert(0,'runtime/domain_authority')
+          from kex_registrar_service import get_zone,get_records
+          z=get_zone('keddeh.systems')
+          assert z and z['status']=='ACTIVE'
+          assert get_records('alpha.keddeh.systems','A')
+          def qname(name): return b''.join(bytes([len(x)])+x.encode() for x in name.split('.'))+b'\0'
+          q=struct.pack('!HHHHHH',0x4b45,0x0100,1,0,0,0)+qname('alpha.keddeh.systems')+struct.pack('!HH',1,1)
+          u=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);u.settimeout(2);u.sendto(q,('127.0.0.1',19053));d,_=u.recvfrom(4096);u.close()
+          _,flags,_,an,_,_=struct.unpack('!HHHHHH',d[:12]);assert flags&0x8000 and flags&0x0400 and an>=1
+          with socket.create_connection(('127.0.0.1',19053),2) as s:
+              s.sendall(struct.pack('!H',len(q))+q);h=s.recv(2);assert len(h)==2;n=struct.unpack('!H',h)[0];buf=s.recv(n);assert len(buf)>=12
+          with socket.create_connection(('127.0.0.1',16091),2): pass
+          print('NETWORK_INTEGRATION_PASS')
+          PY
+          kill $PID
+          wait $PID || true
+          grep -q '"event":"DNS_LISTENING"' /tmp/keddeh-backbone.log
+          grep -q '"event":"MESH_LISTENING"' /tmp/keddeh-backbone.log
+          grep -q '"event":"BACKBONE_READY"' /tmp/keddeh-backbone.log
