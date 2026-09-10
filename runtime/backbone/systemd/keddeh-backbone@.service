@@ -3,6 +3,8 @@ Description=Keddeh Systems Mesh Backbone (%i)
 Documentation=https://github.com/aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS
 After=network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=10
 
 [Service]
 Type=simple
@@ -15,15 +17,23 @@ ExecStartPre=/usr/bin/python3 /opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/backbone
 ExecStart=/usr/bin/python3 /opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/backbone/keddeh_mesh_backbone.py
 Restart=always
 RestartSec=3
-StartLimitIntervalSec=60
-StartLimitBurst=10
 TimeoutStopSec=15
 KillSignal=SIGTERM
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/backbone/state /opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/domain_authority/substrate_ledger
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+UMask=0077
+ReadWritePaths=/var/lib/keddeh/backbone /var/lib/keddeh/domain-authority
 
 [Install]
 WantedBy=multi-user.target
