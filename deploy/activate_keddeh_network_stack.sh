@@ -41,7 +41,7 @@ MESH_HOST="${KEX_MESH_BIND:-127.0.0.1}"
 MESH_PORT="${KEX_MESH_PORT:-16001}"
 
 python3 - "${INSTALL_ROOT}" "${DNS_HOST}" "${DNS_PORT}" "${MESH_HOST}" "${MESH_PORT}" <<'PY'
-import importlib.util,json,socket,struct,sys,time
+import json,socket,struct,sys,time
 from pathlib import Path
 root=Path(sys.argv[1]); dns_host=sys.argv[2]; dns_port=int(sys.argv[3]); mesh_host=sys.argv[4]; mesh_port=int(sys.argv[5])
 da=root/'runtime'/'domain_authority'
@@ -58,14 +58,12 @@ def qname(name):
     return b''.join(bytes([len(x)])+x.encode() for x in name.split('.'))+b'\0'
 query=struct.pack('!HHHHHH',0x4b45,0x0100,1,0,0,0)+qname('alpha.keddeh.systems')+struct.pack('!HH',1,1)
 
-# UDP authoritative response
 u=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); u.settimeout(3); u.sendto(query,(dns_host,dns_port)); data,_=u.recvfrom(4096); u.close()
 if len(data)<12: raise SystemExit('DNS_UDP_SHORT_RESPONSE')
 txid,flags,qd,an,ns,ar=struct.unpack('!HHHHHH',data[:12])
 if txid!=0x4b45 or not (flags & 0x8000) or not (flags & 0x0400) or an<1:
     raise SystemExit('DNS_UDP_NOT_AUTHORITATIVE')
 
-# TCP authoritative response
 with socket.create_connection((dns_host,dns_port),timeout=3) as s:
     s.sendall(struct.pack('!H',len(query))+query)
     h=s.recv(2)
@@ -80,7 +78,6 @@ with socket.create_connection((dns_host,dns_port),timeout=3) as s:
     if txid!=0x4b45 or not (flags & 0x8000) or not (flags & 0x0400) or an<1:
         raise SystemExit('DNS_TCP_NOT_AUTHORITATIVE')
 
-# Mesh inbound socket must accept a TCP connection. Authenticated protocol proof is produced by runtime peer heartbeats.
 with socket.create_connection((mesh_host,mesh_port),timeout=3):
     pass
 
@@ -96,7 +93,6 @@ print(json.dumps({
 }))
 PY
 
-systemctl is-active --quiet "keddedeh-backbone@${NODE_ID}.service" 2>/dev/null && true || true
 systemctl is-active --quiet "keddeh-backbone@${NODE_ID}.service" || { echo "ERROR: backbone service not active after probes" >&2; exit 6; }
 
 [[ -r "${BACKBONE_RECEIPTS}" ]] || { echo "ERROR: backbone receipt log missing" >&2; exit 7; }
