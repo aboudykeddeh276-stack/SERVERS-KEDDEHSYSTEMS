@@ -18,18 +18,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Compile runtime
-        run: |
-          python -m py_compile runtime/domain_authority/kex_registrar_service.py
-          python -m py_compile runtime/domain_authority/kex_dns.py
-          python -m py_compile runtime/backbone/keddeh_mesh_backbone.py
-      - name: Backbone self-test
-        run: python runtime/backbone/keddeh_mesh_backbone.py --self-test
-      - name: Validate activation scripts
-        run: |
-          bash -n deploy/install_keddeh_backbone.sh
-          bash -n deploy/activate_keddeh_network_stack.sh
-      - name: Ephemeral DNS DA mesh integration test
+      - name: Deterministic network validation with diagnostics
+        shell: bash
         env:
           KEX_MESH_SECRET: ci-only-secret
           KEX_NODE_ID: ci-alpha
@@ -40,28 +30,74 @@ jobs:
           KEX_HEARTBEAT_SEC: '1'
           KEX_STALE_SEC: '3'
         run: |
-          python runtime/backbone/keddeh_mesh_backbone.py > /tmp/keddeh-backbone.log 2>&1 &
-          PID=$!
-          trap 'kill $PID 2>/dev/null || true' EXIT
-          sleep 2
-          python - <<'PY'
+          set +e
+          : > network-diagnostics.txt
+          : > keddeh-backbone.log
+          run_check() {
+            name="$1"; shift
+            echo "===== ${name} =====" | tee -a network-diagnostics.txt
+            "$@" 2>&1 | tee -a network-diagnostics.txt
+            rc=${PIPESTATUS[0]}
+            echo "RC=${rc}" | tee -a network-diagnostics.txt
+            if [ "$rc" -ne 0 ]; then
+              echo "FAILED_CHECK=${name}" | tee -a network-diagnostics.txt
+              return "$rc"
+            fi
+          }
+          rc=0
+          run_check compile_registrar python -m py_compile runtime/domain_authority/kex_registrar_service.py || rc=$?
+          [ "$rc" -eq 0 ] && run_check compile_dns python -m py_compile runtime/domain_authority/kex_dns.py || rc=$?
+          [ "$rc" -eq 0 ] && run_check compile_backbone python -m py_compile runtime/backbone/keddeh_mesh_backbone.py || rc=$?
+          [ "$rc" -eq 0 ] && run_check backbone_self_test python runtime/backbone/keddeh_mesh_backbone.py --self-test || rc=$?
+          [ "$rc" -eq 0 ] && run_check install_script_syntax bash -n deploy/install_keddeh_backbone.sh || rc=$?
+          [ "$rc" -eq 0 ] && run_check activation_script_syntax bash -n deploy/activate_keddeh_network_stack.sh || rc=$?
+
+          if [ "$rc" -eq 0 ]; then
+            echo '===== ephemeral_runtime =====' | tee -a network-diagnostics.txt
+            python runtime/backbone/keddeh_mesh_backbone.py > keddeh-backbone.log 2>&1 &
+            PID=$!
+            sleep 2
+            python - <<'PY' 2>&1 | tee -a network-diagnostics.txt
           import socket,struct,sys
           sys.path.insert(0,'runtime/domain_authority')
           from kex_registrar_service import get_zone,get_records
           z=get_zone('keddeh.systems')
-          assert z and z['status']=='ACTIVE'
-          assert get_records('alpha.keddeh.systems','A')
+          assert z and z['status']=='ACTIVE', z
+          records=get_records('alpha.keddeh.systems','A')
+          assert records, records
           def qname(name): return b''.join(bytes([len(x)])+x.encode() for x in name.split('.'))+b'\0'
           q=struct.pack('!HHHHHH',0x4b45,0x0100,1,0,0,0)+qname('alpha.keddeh.systems')+struct.pack('!HH',1,1)
           u=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);u.settimeout(2);u.sendto(q,('127.0.0.1',19053));d,_=u.recvfrom(4096);u.close()
-          _,flags,_,an,_,_=struct.unpack('!HHHHHH',d[:12]);assert flags&0x8000 and flags&0x0400 and an>=1
+          _,flags,_,an,_,_=struct.unpack('!HHHHHH',d[:12]);assert flags&0x8000 and flags&0x0400 and an>=1,(flags,an)
           with socket.create_connection(('127.0.0.1',19053),2) as s:
-              s.sendall(struct.pack('!H',len(q))+q);h=s.recv(2);assert len(h)==2;n=struct.unpack('!H',h)[0];buf=s.recv(n);assert len(buf)>=12
+              s.sendall(struct.pack('!H',len(q))+q);h=s.recv(2);assert len(h)==2,h;n=struct.unpack('!H',h)[0];buf=b''
+              while len(buf)<n:
+                  p=s.recv(n-len(buf))
+                  if not p: break
+                  buf+=p
+              assert len(buf)>=12,len(buf)
           with socket.create_connection(('127.0.0.1',16091),2): pass
           print('NETWORK_INTEGRATION_PASS')
           PY
-          kill $PID
-          wait $PID || true
-          grep -q '"event":"DNS_LISTENING"' /tmp/keddeh-backbone.log
-          grep -q '"event":"MESH_LISTENING"' /tmp/keddeh-backbone.log
-          grep -q '"event":"BACKBONE_READY"' /tmp/keddeh-backbone.log
+            probe_rc=${PIPESTATUS[0]}
+            kill "$PID" 2>/dev/null || true
+            wait "$PID" 2>/dev/null || true
+            cat keddeh-backbone.log >> network-diagnostics.txt
+            if [ "$probe_rc" -ne 0 ]; then rc="$probe_rc"; fi
+            if [ "$rc" -eq 0 ]; then
+              grep -q '"event":"DNS_LISTENING"' keddeh-backbone.log || rc=21
+              grep -q '"event":"MESH_LISTENING"' keddeh-backbone.log || rc=22
+              grep -q '"event":"BACKBONE_READY"' keddeh-backbone.log || rc=23
+            fi
+          fi
+          echo "FINAL_RC=${rc}" | tee -a network-diagnostics.txt
+          exit "$rc"
+      - name: Upload network diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keddeh-network-diagnostics
+          path: |
+            network-diagnostics.txt
+            keddeh-backbone.log
+          if-no-files-found: error
