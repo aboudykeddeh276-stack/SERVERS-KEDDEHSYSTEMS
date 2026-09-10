@@ -1,0 +1,29 @@
+[Unit]
+Description=Keddeh Systems Mesh Backbone (%i)
+Documentation=https://github.com/aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=keddeh
+Group=keddeh
+WorkingDirectory=/opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/backbone
+EnvironmentFile=/etc/keddeh/backbone/%i.env
+Environment=PYTHONUNBUFFERED=1
+ExecStartPre=/usr/bin/python3 /opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/backbone/keddeh_mesh_backbone.py --self-test
+ExecStart=/usr/bin/python3 /opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/backbone/keddeh_mesh_backbone.py
+Restart=always
+RestartSec=3
+StartLimitIntervalSec=60
+StartLimitBurst=10
+TimeoutStopSec=15
+KillSignal=SIGTERM
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/backbone/state /opt/keddeh/SERVERS-KEDDEHSYSTEMS/runtime/domain_authority/substrate_ledger
+
+[Install]
+WantedBy=multi-user.target
