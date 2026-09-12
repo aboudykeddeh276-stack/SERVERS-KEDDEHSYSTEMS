@@ -5,7 +5,6 @@ NODE_ID="${1:-alpha-production}"
 REPO_SRC="${KEX_REPO_SRC:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 INSTALL_ROOT="${KEX_INSTALL_ROOT:-/opt/keddeh/SERVERS-KEDDEHSYSTEMS}"
 ENV_FILE="/etc/keddeh/backbone/${NODE_ID}.env"
-HOST_RECEIPT="${BRAINK_HOST_ACTIVATION_RECEIPT:-/var/lib/braink/host-activation/activation-receipt.json}"
 EXTERNAL_RECEIPT="${KEX_EXTERNAL_OBSERVER_RECEIPT:-}"
 
 if [[ "${EUID}" -ne 0 ]]; then
@@ -13,27 +12,25 @@ if [[ "${EUID}" -ne 0 ]]; then
   exit 2
 fi
 command -v python3 >/dev/null || { echo "ERROR: python3 missing" >&2; exit 3; }
-[[ -r "${HOST_RECEIPT}" ]] || { echo "ERROR: BRAINK HOST_READY receipt missing: ${HOST_RECEIPT}" >&2; exit 4; }
+command -v systemctl >/dev/null || { echo "ERROR: systemctl missing" >&2; exit 4; }
 
-python3 - "${HOST_RECEIPT}" <<'PY'
-import json,sys,time
-from pathlib import Path
-p=Path(sys.argv[1]); r=json.loads(p.read_text())
-if r.get('status')!='HOST_READY' or r.get('admission_state')!='HOST_READY' or r.get('observed_mode')!='ONLINE':
-    raise SystemExit('HOST_ACTIVATION_NOT_READY')
-activated=int(r.get('activated_ns',0))
-age=(time.time_ns()-activated)/1e9 if activated else 1e99
-if age < 0 or age > 300:
-    raise SystemExit(f'HOST_ACTIVATION_STALE:{age:.3f}')
-print(json.dumps({'host_gate':'PASS','host_id':r.get('host_id'),'node_id':r.get('node_id'),'age_sec':round(age,3),'proof_root':r.get('proof_root')}))
-PY
-
+# The server/network carrier proves its own host boundary.  No externally
+# synthesized host-control component is permitted to grant this state.
 "${REPO_SRC}/deploy/install_keddeh_backbone.sh" "${NODE_ID}"
 [[ -r "${ENV_FILE}" ]] || { echo "ERROR: backbone env missing after installer" >&2; exit 5; }
 set -a
 # shellcheck disable=SC1090
 source "${ENV_FILE}"
 set +a
+
+SERVICE="keddeh-backbone@${NODE_ID}.service"
+systemctl is-active --quiet "${SERVICE}" || { echo "ERROR: backbone service not active" >&2; exit 6; }
+MAIN_PID="$(systemctl show --property MainPID --value "${SERVICE}")"
+[[ "${MAIN_PID}" =~ ^[1-9][0-9]*$ ]] || { echo "ERROR: backbone MainPID invalid: ${MAIN_PID}" >&2; exit 7; }
+[[ -d "/proc/${MAIN_PID}" ]] || { echo "ERROR: backbone process missing: ${MAIN_PID}" >&2; exit 8; }
+[[ -e "/proc/${MAIN_PID}/ns/net" ]] || { echo "ERROR: backbone network namespace unavailable: ${MAIN_PID}" >&2; exit 9; }
+NETNS="$(readlink "/proc/${MAIN_PID}/ns/net" || true)"
+printf '{"boundary":"HOST_PROCESS_NETWORK_NAMESPACE","state":"OBSERVED","node_id":"%s","pid":%s,"netns":"%s"}\n' "${NODE_ID}" "${MAIN_PID}" "${NETNS}"
 
 BACKBONE_STATE="${KEX_BACKBONE_STATE:-/var/lib/keddeh/backbone/${NODE_ID}}"
 BACKBONE_RECEIPTS="${BACKBONE_STATE}/backbone_receipts.jsonl"
@@ -108,61 +105,78 @@ if body.get('op')!='PONG' or body.get('ok') is not True or body.get('node_id')!=
     raise SystemExit('MESH_AUTHENTICATED_PONG_INVALID')
 
 print(json.dumps({
-  'host_network_probe':'PASS',
+  'boundary':'HOST_PROTOCOL_STACK',
+  'state':'OBSERVED',
   'da_database':'INTEGRITY_OK',
-  'da_zone':'ACTIVE',
+  'da_zone':'ACTIVE_LOCAL_AUTHORITY',
   'dns_name':name,
-  'dns_udp':'AUTHORITATIVE',
-  'dns_tcp':'AUTHORITATIVE',
-  'mesh_protocol':'AUTHENTICATED_PING_PONG',
+  'dns_udp':'AUTHORITATIVE_RESPONSE_OBSERVED',
+  'dns_tcp':'AUTHORITATIVE_RESPONSE_OBSERVED',
+  'mesh_protocol':'AUTHENTICATED_PING_PONG_OBSERVED',
+  'public_dns_delegation':'NOT_CLAIMED',
+  'public_routing':'NOT_CLAIMED',
   'timestamp_ns':time.time_ns()
 }))
 PY
 
-systemctl is-active --quiet "keddeh-backbone@${NODE_ID}.service" || { echo "ERROR: backbone service not active after probes" >&2; exit 6; }
-[[ -r "${BACKBONE_RECEIPTS}" ]] || { echo "ERROR: backbone receipt log missing: ${BACKBONE_RECEIPTS}" >&2; exit 7; }
+[[ -r "${BACKBONE_RECEIPTS}" ]] || { echo "ERROR: backbone receipt log missing: ${BACKBONE_RECEIPTS}" >&2; exit 10; }
 
 python3 - "${BACKBONE_RECEIPTS}" <<'PY'
-import hashlib,json,sys,time
+import hashlib,json,sys
 from pathlib import Path
 p=Path(sys.argv[1]); lines=[x for x in p.read_text().splitlines() if x.strip()]
 if not lines: raise SystemExit('BACKBONE_RECEIPTS_EMPTY')
 prev='0'*64; events=[]
 for idx,line in enumerate(lines,1):
-    r=json.loads(line); proof=r.pop('proof_root',None)
-    if r.get('previous_proof_root')!=prev:
+    stored=json.loads(line); proof=stored.get('proof_root')
+    body={k:v for k,v in stored.items() if k!='proof_root'}
+    if body.get('previous_proof_root')!=prev:
         raise SystemExit(f'BACKBONE_RECEIPT_CHAIN_BREAK:{idx}')
-    expected=hashlib.sha256(json.dumps(r,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+    expected=hashlib.sha256(json.dumps(body,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
     if proof!=expected:
         raise SystemExit(f'BACKBONE_RECEIPT_HASH_MISMATCH:{idx}')
-    prev=proof; events.append(r.get('event'))
+    prev=proof; events.append(body.get('event'))
 for event in ('DOMAIN_AUTHORITY_READY','DNS_LISTENING','MESH_LISTENING','BACKBONE_READY','MESH_INBOUND'):
     if event not in events: raise SystemExit(f'BACKBONE_REQUIRED_RECEIPT_MISSING:{event}')
-print(json.dumps({'receipt_chain':'PASS','entries':len(lines),'tip':prev}))
+print(json.dumps({'boundary':'BACKBONE_RECEIPT_CHAIN','state':'VERIFIED','entries':len(lines),'tip':prev}))
 PY
 
-echo "HOST_NETWORK_PROVEN node=${NODE_ID} host_receipt=${HOST_RECEIPT}"
+echo "HOST_PROTOCOL_STACK_OBSERVED node=${NODE_ID} pid=${MAIN_PID}"
 
 if [[ -z "${EXTERNAL_RECEIPT}" ]]; then
-  echo "NETWORK_STACK_EXTERNAL_PROOF_PENDING node=${NODE_ID}"
+  echo "EXTERNAL_PROTOCOL_READBACK_PENDING node=${NODE_ID}"
   exit 20
 fi
 [[ -r "${EXTERNAL_RECEIPT}" ]] || { echo "ERROR: external observer receipt unreadable: ${EXTERNAL_RECEIPT}" >&2; exit 21; }
 
 python3 - "${EXTERNAL_RECEIPT}" "${NODE_ID}" <<'PY'
-import json,sys,time
+import hashlib,json,sys,time
 from pathlib import Path
-r=json.loads(Path(sys.argv[1]).read_text()); expected_node=sys.argv[2]
-required={'observer_id','target_node_id','observed_ns','dns_udp','dns_tcp','mesh_protocol','proof_root'}
-missing=sorted(required-set(r))
+stored=json.loads(Path(sys.argv[1]).read_text()); expected_node=sys.argv[2]
+required={'schema','observer_id','target_node_id','observed_ns','dns_udp','dns_tcp','mesh_protocol','proof_root'}
+missing=sorted(required-set(stored))
 if missing: raise SystemExit('EXTERNAL_RECEIPT_MISSING:'+','.join(missing))
-if r['target_node_id']!=expected_node: raise SystemExit('EXTERNAL_RECEIPT_TARGET_MISMATCH')
-if r['observer_id'] in {expected_node,'localhost','127.0.0.1'}: raise SystemExit('EXTERNAL_OBSERVER_NOT_DISTINCT')
-age=(time.time_ns()-int(r['observed_ns']))/1e9
+if stored.get('schema')!='kex.external-network-observer.v1': raise SystemExit('EXTERNAL_RECEIPT_SCHEMA_INVALID')
+proof=stored.get('proof_root'); body={k:v for k,v in stored.items() if k!='proof_root'}
+expected=hashlib.sha256(json.dumps(body,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
+if proof!=expected: raise SystemExit('EXTERNAL_RECEIPT_HASH_INVALID')
+if stored['target_node_id']!=expected_node: raise SystemExit('EXTERNAL_RECEIPT_TARGET_MISMATCH')
+if stored['observer_id'] in {expected_node,'localhost','127.0.0.1'}: raise SystemExit('EXTERNAL_OBSERVER_ID_NOT_DISTINCT')
+age=(time.time_ns()-int(stored['observed_ns']))/1e9
 if age<0 or age>300: raise SystemExit(f'EXTERNAL_RECEIPT_STALE:{age:.3f}')
-if r['dns_udp']!='AUTHORITATIVE' or r['dns_tcp']!='AUTHORITATIVE' or r['mesh_protocol']!='AUTHENTICATED_PING_PONG':
-    raise SystemExit('EXTERNAL_NETWORK_PROBE_NOT_PROVEN')
-print(json.dumps({'external_observer_gate':'PASS','observer_id':r['observer_id'],'age_sec':round(age,3),'proof_root':r['proof_root']}))
+if stored['dns_udp']!='AUTHORITATIVE' or stored['dns_tcp']!='AUTHORITATIVE' or stored['mesh_protocol']!='AUTHENTICATED_PING_PONG':
+    raise SystemExit('EXTERNAL_PROTOCOL_READBACK_NOT_VERIFIED')
+print(json.dumps({
+    'boundary':'EXTERNAL_PROTOCOL_OBSERVATION_RECEIPT',
+    'state':'RECEIPT_INTEGRITY_AND_READBACK_VERIFIED',
+    'observer_id':stored['observer_id'],
+    'age_sec':round(age,3),
+    'proof_root':proof,
+    'observer_host_independence':'ASSERTED_BY_OBSERVER_ID_NOT_CRYPTOGRAPHICALLY_ATTESTED',
+    'public_internet_path':'NOT_CLAIMED',
+    'dns_parent_delegation':'NOT_CLAIMED',
+    'inter_as_bgp':'NOT_CLAIMED'
+}))
 PY
 
-echo "NETWORK_STACK_PROVEN_LIVE node=${NODE_ID} external_observer=${EXTERNAL_RECEIPT}"
+echo "EXTERNAL_PROTOCOL_READBACK_RECEIPT_VERIFIED node=${NODE_ID} receipt=${EXTERNAL_RECEIPT}"
