@@ -1,0 +1,24 @@
+[Unit]
+Description=Keddeh SaaS Control Plane (%i)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=keddeh
+Group=keddeh
+EnvironmentFile=/etc/keddeh/saas/%i.env
+WorkingDirectory=/opt/keddeh/BRAINK
+ExecStart=/opt/keddeh/venvs/keddeh-saas/bin/uvicorn keddeh_saas.app:app --host ${KEDDEH_SAAS_BIND} --port ${KEDDEH_SAAS_PORT} --workers 1
+Restart=on-failure
+RestartSec=2
+TimeoutStartSec=30
+TimeoutStopSec=20
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/keddeh/saas/%i
+
+[Install]
+WantedBy=multi-user.target
