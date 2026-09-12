@@ -1,0 +1,38 @@
+{
+  "schema": "keddeh.saas-carrier-binding/v1",
+  "service": "service://keddeh/saas-control-plane",
+  "source_authority": {
+    "repository": "aboudykeddeh276-stack/BRAINK",
+    "branch_candidate": "deploy/keddeh-saas-control-plane-r2",
+    "owns": [
+      "BRAINK orchestration/state mechanics",
+      "resident runtime registry",
+      "IL-LLM evidence projection"
+    ]
+  },
+  "execution_carrier_authority": {
+    "repository": "aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS",
+    "branch_candidate": "deploy/keddeh-saas-control-plane-r2-carrier",
+    "owns": [
+      "Linux service process",
+      "listener/bind",
+      "server-side persistence carrier",
+      "local runtime qualification"
+    ]
+  },
+  "preservation_rules": [
+    "EXISTING_BRAINK_RUNTIME_RECORD_IS_NOT_OVERWRITTEN",
+    "BRAINK_EVIDENCE_PROJECTION_DOES_NOT_OWN_CASEPATH_OR_CLAIMPATH_BUSINESS_STATE",
+    "LOCAL_PROCESS_ACTIVE_DOES_NOT_IMPLY_PUBLIC_INGRESS",
+    "REPOSITORY_PUBLICATION_DOES_NOT_IMPLY_HOST_DEPLOYMENT"
+  ],
+  "promotion_requires": [
+    "authorised Linux host execution",
+    "systemd process-active readback",
+    "local HTTP health/readiness readback",
+    "BRAINK IL-LLM evidence readiness",
+    "restart/rehydration verification",
+    "external ingress readback when public exposure is claimed"
+  ],
+  "current_state": "CARRIER_IMPLEMENTATION_STAGED_NOT_HOST_EXECUTED"
+}
