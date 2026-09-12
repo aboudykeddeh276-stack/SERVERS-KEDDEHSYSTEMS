@@ -1,0 +1,33 @@
+{
+  "schema": "keddeh.server-carrier.accountability.qualification.r33.v1",
+  "branch": "repair/accountability-carrier-r33",
+  "source_blobs": {
+    "governance_gate": "205fdf40772856bc06255a005b1a94eb7561caff",
+    "governance_request_binder": "4cec4d075f3ec8a5c6afed20c335aa6b397e7d57",
+    "carrier_gate": "e4aa89fd5e4ac95ea62c48f723ea3e236dd5e09e",
+    "activation_wrapper": "5c1c109cc5124f3fea46dd79d31e71864f28fcb3"
+  },
+  "cross_repository_probe": {
+    "source_blob_match": true,
+    "governance_decision": "ALLOW",
+    "bound_envelope_verified": true,
+    "carrier_state": "CARRIER_ACTION_ADMITTED",
+    "execution_claim": "NOT_EXECUTED_BY_GATE",
+    "braink_authority_acquired": false,
+    "carrier_authority_mutated": false,
+    "request_replay_tamper": "REJECTED:ACCOUNTABILITY_REQUEST_ROOT_MISMATCH",
+    "envelope_target_tamper": "REJECTED:ACCOUNTABILITY_ENVELOPE_ROOT_INVALID",
+    "python_compile": "PASS"
+  },
+  "qualified_state": "ACCOUNTABILITY_CARRIER_BINDING_LOCALLY_EXECUTED",
+  "activation_wrapper_state": "IMPLEMENTED_NOT_HOST_EXECUTED_IN_THIS_QUALIFICATION",
+  "resident_actuator_replaced": false,
+  "resident_actuator": "deploy/activate_keddeh_network_stack.sh",
+  "not_claimed": [
+    "HOST_NETWORK_PROVEN",
+    "NETWORK_STACK_PROVEN_LIVE",
+    "public BGP",
+    "public DNS delegation",
+    "production deployment"
+  ]
+}
