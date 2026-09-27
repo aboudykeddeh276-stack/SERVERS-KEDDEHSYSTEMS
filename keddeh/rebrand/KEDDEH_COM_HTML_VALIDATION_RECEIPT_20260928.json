@@ -1,0 +1,48 @@
+{
+  "schema": "keddeh.web-profile.validation.v1",
+  "observed_at": "2026-09-28T05:17:00+09:30",
+  "repository": "aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS",
+  "branch": "kex/site-estate-evidence-20260928",
+  "artifact": "keddeh-web-fabric/keddeh.com/index.html",
+  "artifact_blob_sha": "6236147d49d484e4a6a0d7bb4ee5f93ef16466af",
+  "validation": {
+    "method": "connected GitHub blob readback + deterministic structural assertions",
+    "passed": 22,
+    "total": 22,
+    "failed": [],
+    "checks": [
+      "html5_doctype",
+      "lang_en_AU",
+      "title",
+      "meta_description",
+      "canonical_root",
+      "viewport",
+      "og_title",
+      "og_description",
+      "og_url",
+      "twitter_card",
+      "jsonld",
+      "schema_organization",
+      "schema_website",
+      "schema_webpage",
+      "schema_breadcrumbs",
+      "skip_link",
+      "route_casepath",
+      "route_claimpath",
+      "route_braink",
+      "route_kex",
+      "route_systems",
+      "route_evidence"
+    ]
+  },
+  "evidence_state": "HTML_SOURCE_OBSERVED_AND_STRUCTURALLY_VALIDATED",
+  "not_proven": [
+    "public keddeh.com DNS effect",
+    "production host binding",
+    "browser/runtime rendering",
+    "WCAG 2.2 AA conformance",
+    "Core Web Vitals",
+    "all child routes deployed",
+    "independent assessment"
+  ]
+}
