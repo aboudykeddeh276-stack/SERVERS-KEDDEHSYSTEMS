@@ -115,7 +115,8 @@ The domain/team account must reply with:
 
 ## Boundary State
 - Rebrand instruction set: `EXECUTED_AS_GITHUB_SOURCE_PUSH`
-- Team relay: `PENDING_EMAIL_SEND`
+- Team relay: `EXECUTED_BY_EMAIL`
+- KEDDEH.com parent HTML source: `OBSERVED_AND_STRUCTURALLY_VALIDATED_22_OF_22`
 - DNS mutation: `NOT_EXECUTED`
 - KEDDEH.com public route effect: `NOT_YET_DEMONSTRATED`
 - CasePath platform production deployment: `SUCCEEDED`
