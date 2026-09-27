@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  database:
+    image: ankane/pgvector:v0.5.1
+    container_name: relational_vector_cluster
+    environment:
+      POSTGRES_USER: orchestrator_kernel
+      POSTGRES_PASSWORD: ${DB_SECURE_PASSWORD}
+      POSTGRES_DB: agentic_mainframe
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orchestrator_kernel -d agentic_mainframe"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - secure_mainframe_backplane
+
+  cache_broker:
+    image: redis:7.2-alpine
+    container_name: session_lock_broker
+    command: redis-server --requirepass ${REDIS_SECURE_PASSWORD} --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_SECURE_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - secure_mainframe_backplane
+
+  agent_node_cluster:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: worker_critic_isolated_core
+    depends_on:
+      database:
+        condition: service_healthy
+      cache_broker:
+        condition: service_healthy
+    environment:
+      - DB_CONN_STR=postgresql://orchestrator_kernel:${DB_SECURE_PASSWORD}@database:5432/agentic_mainframe
+      - REDIS_CONN_STR=redis://:${REDIS_SECURE_PASSWORD}@cache_broker:6379/0
+    volumes:
+      - ./:/workspace
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_ADMIN
+    networks:
+      - secure_mainframe_backplane
+
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+
+networks:
+  secure_mainframe_backplane:
+    driver: bridge
+    internal: false
