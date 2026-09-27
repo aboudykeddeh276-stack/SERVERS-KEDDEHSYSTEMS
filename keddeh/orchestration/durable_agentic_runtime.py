@@ -210,9 +210,10 @@ class OperationalWorkerNode(BaseActorNode):
             patch_directive = envelope.validation_results.remediation_instructions or "remove invalid operations"
             updated_code = (
                 f"# PATCHED VIA CRITIC DIRECTIVE: {patch_directive}\n"
-                + current_code.replace("import os", "# OS IMPORT BLOCKED")
+                + current_code.replace("import os", "# SYSTEM_IMPORT_BLOCKED")
                 .replace("subprocess", "# SUBPROCESS BLOCKED")
-                .replace("os.system", "# os.system BLOCKED")
+                .replace("os.system", "# SYSTEM_CALL_BLOCKED")
+                .replace("rm -rf", "REMOVED_DANGEROUS_DELETE")
             )
         else:
             updated_code = current_code
