@@ -1,0 +1,37 @@
+{
+  "schema": "keddeh.com.frontage-deliverable-validation.v2",
+  "artifact": "keddeh-web-fabric/keddeh.com/index.html",
+  "repo": "aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS",
+  "branch": "kex/site-estate-evidence-20260928",
+  "source_commit": "70c1a940fb4e3a087f9bf4aad4d99da36fab1152",
+  "github_blob_sha": "53cc48ce67eb4b426aba872d51524398a19f2985",
+  "characters": 11580,
+  "validation_result": "25/25 PASS",
+  "state": {
+    "website_artifact": "PRODUCED_AND_SOURCE_COMMITTED",
+    "domain_team_handoff": "PENDING",
+    "public_domain_deployment": "NOT_CLAIMED",
+    "public_readback": "NOT_CLAIMED"
+  },
+  "checks": [
+    "HTML5 doctype",
+    "en-AU language",
+    "canonical URL",
+    "meta description",
+    "Open Graph title/description/url",
+    "Twitter card",
+    "JSON-LD",
+    "Organization/WebSite/WebPage/BreadcrumbList/Service schema",
+    "skip link",
+    "main landmark",
+    "/braink",
+    "/casepath",
+    "/claimpath",
+    "/kex",
+    "/systems",
+    "/evidence",
+    "mailto:aboudy@keddeh.com",
+    "no fake production badge",
+    "no internal project IDs"
+  ]
+}
