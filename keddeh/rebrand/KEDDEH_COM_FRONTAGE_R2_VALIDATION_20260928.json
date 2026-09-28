@@ -39,8 +39,11 @@
   "state": {
     "website_artifact": "PRODUCED_AND_SOURCE_COMMITTED",
     "canonical_frontage_project": "appgprj_6aa52748b7788191afe0f7f86fc78833",
-    "domain_team_handoff": "PENDING",
+    "domain_team_handoff": "EXECUTED",
     "public_domain_deployment": "NOT_CLAIMED",
-    "public_readback": "NOT_CLAIMED"
+    "public_readback": "NOT_CLAIMED",
+    "domain_team_handoff_receipt": "gmail:1a0e9f792649e09c",
+    "workbook_command": "owner-workbook:keddeh-com-frontage-r2-publish-20260929",
+    "workbook_control_outbox_row": 106
   }
 }
