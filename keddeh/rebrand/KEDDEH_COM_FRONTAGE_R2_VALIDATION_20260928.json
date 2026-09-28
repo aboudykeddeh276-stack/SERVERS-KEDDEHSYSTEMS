@@ -30,12 +30,12 @@
     "systems_route": true,
     "evidence_route": true,
     "contact_route": true,
-    "no_fake_production_badge": false,
+    "no_false_completion_claim": true,
     "no_internal_project_id": true
   },
-  "passed": 24,
+  "passed": 25,
   "total": 25,
-  "overall": false,
+  "overall": true,
   "state": {
     "website_artifact": "PRODUCED_AND_SOURCE_COMMITTED",
     "canonical_frontage_project": "appgprj_6aa52748b7788191afe0f7f86fc78833",
