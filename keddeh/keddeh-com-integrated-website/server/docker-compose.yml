@@ -1,0 +1,17 @@
+services:
+  keddeh-ns:
+    image: internetsystemsconsortium/bind9:9.18
+    container_name: keddeh-authoritative-dns
+    restart: unless-stopped
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      - ./named.conf:/etc/bind/named.conf:ro
+      - ./zones:/etc/bind/zones:ro
+      - ./cache:/var/cache/bind
+    healthcheck:
+      test: ["CMD", "named-checkconf", "/etc/bind/named.conf"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
