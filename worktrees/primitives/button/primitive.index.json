@@ -1,0 +1,33 @@
+{
+  "schema_version": "keddeh.ui-primitive/v1",
+  "primitive": "button",
+  "version": "1.0.0",
+  "html_tag": "button",
+  "identity": {
+    "required": [
+      "artifact_id",
+      "revision"
+    ],
+    "child_links_are_independent": true
+  },
+  "properties": {
+    "label": "string",
+    "action_id": "string"
+  },
+  "allowed_children": [],
+  "code_stack": {
+    "manifest": "worktrees/primitives/button/primitive.index.json",
+    "renderer": "worktrees/primitives/button/render.js",
+    "styles": "worktrees/primitives/button/style.css"
+  },
+  "editing": {
+    "admin_required": true,
+    "raw_stack_exposed": true,
+    "production_write_requires_etag": true
+  },
+  "security": {
+    "arbitrary_eval": false,
+    "inline_script": false,
+    "unsafe_html": false
+  }
+}

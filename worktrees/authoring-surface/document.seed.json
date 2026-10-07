@@ -1,0 +1,104 @@
+{
+  "schema_version": "keddeh.editable-document/v1",
+  "document_id": "keddeh-workspace-home",
+  "revision": 1,
+  "title": "KEDDEH Workspace",
+  "artifacts": [
+    {
+      "artifact_id": "title-genesis",
+      "type": "title",
+      "parent_id": null,
+      "order": 10,
+      "revision": 1,
+      "props": {
+        "eyebrow": "KEDDEH Systems · Operator Workspace",
+        "text": "A system you can inspect, edit and evolve."
+      },
+      "style": {},
+      "behavior": {}
+    },
+    {
+      "artifact_id": "container-intro",
+      "type": "container",
+      "parent_id": null,
+      "order": 20,
+      "revision": 1,
+      "props": {
+        "label": "Introduction",
+        "layout": "split"
+      },
+      "style": {},
+      "behavior": {}
+    },
+    {
+      "artifact_id": "claim-runtime",
+      "type": "claim",
+      "parent_id": "container-intro",
+      "order": 10,
+      "revision": 1,
+      "props": {
+        "claim": "Every published capability must remain traceable to source, execution and independent readback.",
+        "basis": "KEDDEH source lineage and runtime receipt contracts.",
+        "status": "supported"
+      },
+      "style": {},
+      "behavior": {}
+    },
+    {
+      "artifact_id": "learning-authoring",
+      "type": "learning",
+      "parent_id": "container-intro",
+      "order": 20,
+      "revision": 1,
+      "props": {
+        "learning": "A container and every hyperlink inside it retain separate identities and code stacks.",
+        "source": "KEDDEH authoring model v1",
+        "confidence": 1
+      },
+      "style": {},
+      "behavior": {}
+    },
+    {
+      "artifact_id": "container-actions",
+      "type": "container",
+      "parent_id": null,
+      "order": 30,
+      "revision": 1,
+      "props": {
+        "label": "Actions",
+        "layout": "grid"
+      },
+      "style": {},
+      "behavior": {}
+    },
+    {
+      "artifact_id": "link-runtime",
+      "type": "link",
+      "parent_id": "container-actions",
+      "order": 10,
+      "revision": 1,
+      "props": {
+        "text": "Inspect runtime packaging",
+        "href": "/packaging/README.md",
+        "target": "_self"
+      },
+      "style": {},
+      "behavior": {}
+    },
+    {
+      "artifact_id": "execution-export",
+      "type": "execution",
+      "parent_id": "container-actions",
+      "order": 20,
+      "revision": 1,
+      "props": {
+        "label": "Export auditable document",
+        "action_id": "export-document",
+        "input": {}
+      },
+      "style": {},
+      "behavior": {}
+    }
+  ],
+  "audit": []
+}

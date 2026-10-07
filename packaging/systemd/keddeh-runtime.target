@@ -1,0 +1,5 @@
+[Unit]
+Description=KEDDEH indexed runtime target
+Documentation=file:/opt/keddeh/SERVERS-KEDDEHSYSTEMS/packaging/README.md
+Wants=keddeh-runtime-preflight.service keddeh-module-reconcile.timer keddeh-module-index.path
+After=keddeh-runtime-preflight.service

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keddeh.com/schemas/wasm-package-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "module_id",
+    "artifact",
+    "sha256",
+    "abi",
+    "wit_world",
+    "entry_protocol",
+    "preopens",
+    "network"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "keddeh.wasm-package/v1"
+    },
+    "module_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "artifact": {
+      "type": "string"
+    },
+    "sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "abi": {
+      "const": "wasi-preview1-command+wit-contract"
+    },
+    "wit_world": {
+      "const": "keddeh:runtime/keddeh-module@1.0.0"
+    },
+    "entry_protocol": {
+      "const": "stdin-request/stdout-receipt-json-v1"
+    },
+    "preopens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "host",
+          "guest",
+          "mode"
+        ],
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "guest": {
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "ro",
+              "rw"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "network": {
+      "enum": [
+        "none",
+        "declared-host-mediated"
+      ]
+    }
+  }
+}

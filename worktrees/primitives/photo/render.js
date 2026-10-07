@@ -1,0 +1,2 @@
+function safe(value){try{const u=new URL(value,location.origin);return u.protocol==="http:"||u.protocol==="https:"?u.href:"";}catch{return "";}}
+export function render(a){const f=document.createElement("figure");f.className="k-photo";const i=document.createElement("img");i.src=safe(a.props.src||"");i.alt=a.props.alt||"";i.loading="lazy";f.append(i);if(a.props.caption){const c=document.createElement("figcaption");c.textContent=a.props.caption;f.append(c);}return f;}

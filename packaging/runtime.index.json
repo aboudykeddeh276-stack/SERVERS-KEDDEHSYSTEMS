@@ -1,0 +1,127 @@
+{
+  "schema_version": "keddeh.runtime-index/v1",
+  "runtime_id": "servers-keddehsystems",
+  "version": "1.0.0",
+  "source": {
+    "repository": "aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS",
+    "commit": "dec0981cde1d22ba297168bf05a3dd27a28b6f63"
+  },
+  "sites_binding": {
+    "project_id": "appgprj_6aaa7bfa99f08191a7dc892e2df3406f",
+    "title": "KEDDEH Workspace",
+    "source_commit": "ff3c30a31abd9a348a18b0a1b5789f8666d52c10",
+    "archive_sha256": "b6b57b7966f73ec5e306fe5e3ff92ad1aac0788be3fa1c35088a7a7a8620d14d",
+    "binding_status": "REFERENCED_NOT_BYTEWISE_IMPORTED"
+  },
+  "install_roots": {
+    "code": "/opt/keddeh/SERVERS-KEDDEHSYSTEMS",
+    "config": "/etc/keddeh",
+    "state": "/var/lib/keddeh",
+    "runtime": "/run/keddeh"
+  },
+  "activation_profiles": {
+    "baseline": [
+      "authority-root",
+      "evidence-ledger-data",
+      "foundry-bindings",
+      "governance-network",
+      "market-services",
+      "receipts-ledger",
+      "runtime-r17-contract"
+    ],
+    "host_runtime": [
+      "runtime-domain-authority",
+      "runtime-backbone"
+    ],
+    "explicit_only": [
+      "deploy-runtime",
+      "web-domain-authority",
+      "foundry-domain-r18",
+      "runtime-unification",
+      "runtime-r15-actuation",
+      "authoring-plane"
+    ]
+  },
+  "modules": [
+    {
+      "module_id": "authority-root",
+      "index": "packaging/modules/authority-root/module.index.json",
+      "activation_default": true
+    },
+    {
+      "module_id": "deploy-runtime",
+      "index": "packaging/modules/deploy-runtime/module.index.json",
+      "activation_default": false
+    },
+    {
+      "module_id": "evidence-ledger-data",
+      "index": "packaging/modules/evidence-ledger-data/module.index.json",
+      "activation_default": true
+    },
+    {
+      "module_id": "foundry-domain-r18",
+      "index": "packaging/modules/foundry-domain-r18/module.index.json",
+      "activation_default": false
+    },
+    {
+      "module_id": "foundry-adapters-r19",
+      "index": "packaging/modules/foundry-adapters-r19/module.index.json",
+      "activation_default": true
+    },
+    {
+      "module_id": "foundry-bindings",
+      "index": "packaging/modules/foundry-bindings/module.index.json",
+      "activation_default": true
+    },
+    {
+      "module_id": "governance-network",
+      "index": "packaging/modules/governance-network/module.index.json",
+      "activation_default": true
+    },
+    {
+      "module_id": "web-domain-authority",
+      "index": "packaging/modules/web-domain-authority/module.index.json",
+      "activation_default": false
+    },
+    {
+      "module_id": "runtime-unification",
+      "index": "packaging/modules/runtime-unification/module.index.json",
+      "activation_default": false
+    },
+    {
+      "module_id": "market-services",
+      "index": "packaging/modules/market-services/module.index.json",
+      "activation_default": true
+    },
+    {
+      "module_id": "receipts-ledger",
+      "index": "packaging/modules/receipts-ledger/module.index.json",
+      "activation_default": true
+    },
+    {
+      "module_id": "runtime-r15-actuation",
+      "index": "packaging/modules/runtime-r15-actuation/module.index.json",
+      "activation_default": false
+    },
+    {
+      "module_id": "runtime-r17-contract",
+      "index": "packaging/modules/runtime-r17-contract/module.index.json",
+      "activation_default": true
+    },
+    {
+      "module_id": "runtime-backbone",
+      "index": "packaging/modules/runtime-backbone/module.index.json",
+      "activation_default": false
+    },
+    {
+      "module_id": "runtime-domain-authority",
+      "index": "packaging/modules/runtime-domain-authority/module.index.json",
+      "activation_default": false
+    },
+    {
+      "module_id": "authoring-plane",
+      "index": "packaging/modules/authoring-plane/module.index.json",
+      "activation_default": false
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": "keddeh.module-index/v1",
+  "module_id": "runtime-r15-actuation",
+  "display_name": "Server Actuation Runtime R15",
+  "version": "1.0.0",
+  "authority_class": "server-runtime",
+  "source_paths": [
+    "runtime/R15/SERVER_ROOM_SECTOR_MAP.json",
+    "runtime/R15/server_actuation_runtime.py"
+  ],
+  "execution": {
+    "class": "native",
+    "activation_default": false,
+    "command": [
+      "/usr/bin/python3",
+      "runtime/R15/server_actuation_runtime.py"
+    ],
+    "health_command": [],
+    "required_env": [],
+    "service_type": "simple"
+  },
+  "dependencies": [
+    "authority-root",
+    "governance-network"
+  ],
+  "systemd": {
+    "unit": "keddeh-module@.service",
+    "health_unit": "keddeh-module-health@.service",
+    "target": "keddeh-runtime.target",
+    "restart_policy": "on-failure"
+  },
+  "wasm": {
+    "abi": "wasi-preview1-command+wit-contract",
+    "world": "keddeh:runtime/keddeh-module@1.0.0",
+    "wit": "packaging/wasm/wit/keddeh-runtime.wit",
+    "adapter_artifact": "packaging/wasm/artifacts/keddeh_module_guest.wasm",
+    "sha256": null,
+    "build_status": "SOURCE_DEFINED_PENDING_CI"
+  },
+  "vfs": {
+    "read_only": [
+      "runtime/R15/SERVER_ROOM_SECTOR_MAP.json",
+      "runtime/R15/server_actuation_runtime.py"
+    ],
+    "read_write": [
+      "/var/lib/keddeh/modules/runtime-r15-actuation"
+    ]
+  },
+  "network": {
+    "mode": "none",
+    "listen": [],
+    "connect": []
+  },
+  "lifecycle": {
+    "preflight": "validate-index",
+    "start": "guarded-native-exec",
+    "health": "emit-index-and-receipt-readback",
+    "stop": "systemd-sigterm"
+  },
+  "evidence": {
+    "state_root_path": "/var/lib/keddeh/modules/runtime-r15-actuation/state-root.json",
+    "phase_root_path": "/var/lib/keddeh/modules/runtime-r15-actuation/phase-root.json",
+    "receipt_path": "/var/lib/keddeh/modules/runtime-r15-actuation/receipts.jsonl",
+    "generator_id": "keddeh-module-runner:runtime-r15-actuation",
+    "verifier_id": "keddeh-module-verifier:runtime-r15-actuation",
+    "promotion_status": "SOURCE_DEFINED_PENDING_BUILD_AND_RUNTIME_READBACK"
+  }
+}

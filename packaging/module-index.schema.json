@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keddeh.com/schemas/module-index-v1.json",
+  "title": "KEDDEH Module Index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "module_id",
+    "display_name",
+    "version",
+    "authority_class",
+    "source_paths",
+    "execution",
+    "dependencies",
+    "systemd",
+    "wasm",
+    "vfs",
+    "network",
+    "lifecycle",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "keddeh.module-index/v1"
+    },
+    "module_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "authority_class": {
+      "enum": [
+        "server-runtime",
+        "deployment",
+        "evidence",
+        "foundry",
+        "governance",
+        "web-domain",
+        "market-interface",
+        "receipt-ledger",
+        "contract"
+      ]
+    },
+    "source_paths": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "activation_default",
+        "command",
+        "required_env",
+        "service_type"
+      ],
+      "properties": {
+        "class": {
+          "enum": [
+            "native",
+            "wasi-adapter",
+            "data-only",
+            "library",
+            "external-interface"
+          ]
+        },
+        "activation_default": {
+          "type": "boolean"
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "health_command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_env": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
+          }
+        },
+        "service_type": {
+          "enum": [
+            "simple",
+            "oneshot",
+            "external",
+            "none"
+          ]
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "systemd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unit",
+        "health_unit",
+        "target",
+        "restart_policy"
+      ],
+      "properties": {
+        "unit": {
+          "type": "string",
+          "pattern": "^keddeh-module@[.]service$"
+        },
+        "health_unit": {
+          "type": "string",
+          "pattern": "^keddeh-module-health@[.]service$"
+        },
+        "target": {
+          "const": "keddeh-runtime.target"
+        },
+        "restart_policy": {
+          "enum": [
+            "no",
+            "on-failure",
+            "always"
+          ]
+        }
+      }
+    },
+    "wasm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "abi",
+        "world",
+        "wit",
+        "adapter_artifact",
+        "sha256",
+        "build_status"
+      ],
+      "properties": {
+        "abi": {
+          "const": "wasi-preview1-command+wit-contract"
+        },
+        "world": {
+          "const": "keddeh:runtime/keddeh-module@1.0.0"
+        },
+        "wit": {
+          "const": "packaging/wasm/wit/keddeh-runtime.wit"
+        },
+        "adapter_artifact": {
+          "const": "packaging/wasm/artifacts/keddeh_module_guest.wasm"
+        },
+        "sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "build_status": {
+          "enum": [
+            "SOURCE_DEFINED_PENDING_CI",
+            "BUILT_UNVERIFIED",
+            "HASH_VERIFIED"
+          ]
+        }
+      }
+    },
+    "vfs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "read_only",
+        "read_write"
+      ],
+      "properties": {
+        "read_only": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "read_write": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "listen",
+        "connect"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "none",
+            "declared-native",
+            "external"
+          ]
+        },
+        "listen": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "protocol",
+              "port",
+              "purpose"
+            ],
+            "properties": {
+              "protocol": {
+                "enum": [
+                  "tcp",
+                  "udp",
+                  "unix"
+                ]
+              },
+              "port": {
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              },
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "connect": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preflight",
+        "start",
+        "health",
+        "stop"
+      ],
+      "properties": {
+        "preflight": {
+          "const": "validate-index"
+        },
+        "start": {
+          "type": "string"
+        },
+        "health": {
+          "type": "string"
+        },
+        "stop": {
+          "type": "string"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state_root_path",
+        "phase_root_path",
+        "receipt_path",
+        "generator_id",
+        "verifier_id",
+        "promotion_status"
+      ],
+      "properties": {
+        "state_root_path": {
+          "type": "string"
+        },
+        "phase_root_path": {
+          "type": "string"
+        },
+        "receipt_path": {
+          "type": "string"
+        },
+        "generator_id": {
+          "type": "string"
+        },
+        "verifier_id": {
+          "type": "string"
+        },
+        "promotion_status": {
+          "const": "SOURCE_DEFINED_PENDING_BUILD_AND_RUNTIME_READBACK"
+        }
+      }
+    }
+  }
+}

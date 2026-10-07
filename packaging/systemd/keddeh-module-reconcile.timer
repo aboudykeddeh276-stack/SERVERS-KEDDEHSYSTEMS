@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodic KEDDEH index reconciliation
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=15min
+RandomizedDelaySec=90s
+Persistent=true
+Unit=keddeh-module-reconcile.service
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,1 @@
+export function render(a){const w=document.createElement("header");w.className="k-title";if(a.props.eyebrow){const p=document.createElement("p");p.textContent=a.props.eyebrow;w.append(p);}const h=document.createElement("h1");h.textContent=a.props.text||"Untitled";w.append(h);return w;}

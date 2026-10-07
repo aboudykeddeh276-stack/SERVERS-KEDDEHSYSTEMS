@@ -1,0 +1,74 @@
+{
+  "schema_version": "keddeh.module-index/v1",
+  "module_id": "deploy-runtime",
+  "display_name": "Deployment and Qualification Runtime",
+  "version": "1.0.0",
+  "authority_class": "deployment",
+  "source_paths": [
+    "deploy/README.md",
+    "deploy/activate_keddeh_network_stack.sh",
+    "deploy/install_keddeh_backbone.sh",
+    "deploy/keddeh_external_network_observer.py",
+    "deploy/validate_keddeh_network_release.py"
+  ],
+  "execution": {
+    "class": "external-interface",
+    "activation_default": false,
+    "command": [],
+    "health_command": [],
+    "required_env": [
+      "BRAINK_HOST_ACTIVATION_RECEIPT"
+    ],
+    "service_type": "external"
+  },
+  "dependencies": [
+    "authority-root",
+    "runtime-backbone",
+    "runtime-domain-authority"
+  ],
+  "systemd": {
+    "unit": "keddeh-module@.service",
+    "health_unit": "keddeh-module-health@.service",
+    "target": "keddeh-runtime.target",
+    "restart_policy": "no"
+  },
+  "wasm": {
+    "abi": "wasi-preview1-command+wit-contract",
+    "world": "keddeh:runtime/keddeh-module@1.0.0",
+    "wit": "packaging/wasm/wit/keddeh-runtime.wit",
+    "adapter_artifact": "packaging/wasm/artifacts/keddeh_module_guest.wasm",
+    "sha256": null,
+    "build_status": "SOURCE_DEFINED_PENDING_CI"
+  },
+  "vfs": {
+    "read_only": [
+      "deploy/README.md",
+      "deploy/activate_keddeh_network_stack.sh",
+      "deploy/install_keddeh_backbone.sh",
+      "deploy/keddeh_external_network_observer.py",
+      "deploy/validate_keddeh_network_release.py"
+    ],
+    "read_write": [
+      "/var/lib/keddeh/modules/deploy-runtime"
+    ]
+  },
+  "network": {
+    "mode": "none",
+    "listen": [],
+    "connect": []
+  },
+  "lifecycle": {
+    "preflight": "validate-index",
+    "start": "validate-and-register",
+    "health": "emit-index-and-receipt-readback",
+    "stop": "no-op"
+  },
+  "evidence": {
+    "state_root_path": "/var/lib/keddeh/modules/deploy-runtime/state-root.json",
+    "phase_root_path": "/var/lib/keddeh/modules/deploy-runtime/phase-root.json",
+    "receipt_path": "/var/lib/keddeh/modules/deploy-runtime/receipts.jsonl",
+    "generator_id": "keddeh-module-runner:deploy-runtime",
+    "verifier_id": "keddeh-module-verifier:deploy-runtime",
+    "promotion_status": "SOURCE_DEFINED_PENDING_BUILD_AND_RUNTIME_READBACK"
+  }
+}

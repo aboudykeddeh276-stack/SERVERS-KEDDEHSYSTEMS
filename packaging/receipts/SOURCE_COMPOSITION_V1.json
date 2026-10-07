@@ -1,0 +1,28 @@
+{
+  "receipt_type": "KEDDEH_SOURCE_COMPOSITION",
+  "receipt_version": "1.0.0",
+  "generated_at": "2026-10-07T00:00:00Z",
+  "generator": "OpenAI Codex authorized GitHub connector",
+  "github_source": {
+    "repository": "aboudykeddeh276-stack/SERVERS-KEDDEHSYSTEMS",
+    "base_commit": "dec0981cde1d22ba297168bf05a3dd27a28b6f63",
+    "base_tree": "b2a454c02b37a232ea4e3372dfc16dd1c6b55f9b"
+  },
+  "sites_source": {
+    "project_id": "appgprj_6aaa7bfa99f08191a7dc892e2df3406f",
+    "version": 7,
+    "source_commit": "ff3c30a31abd9a348a18b0a1b5789f8666d52c10",
+    "archive_sha256": "b6b57b7966f73ec5e306fe5e3ff92ad1aac0788be3fa1c35088a7a7a8620d14d",
+    "relationship": "REFERENCE_ONLY_NOT_BYTEWISE_IMPORT"
+  },
+  "module_count": 16,
+  "status": "SOURCE_DEFINED_PENDING_CI_AND_RUNTIME_READBACK",
+  "non_claims": [
+    "This receipt does not prove a successful build.",
+    "This receipt does not prove systemd activation.",
+    "This receipt does not prove DNS publication, TLS activation, public reachability, or deployment.",
+    "The Sites archive has not been bytewise imported into this GitHub commit."
+  ],
+  "worktree_primitive_count": 10,
+  "authoring_plane": "SOURCE_DEFINED_PENDING_CI_AND_AUTHENTICATED_RUNTIME_READBACK"
+}

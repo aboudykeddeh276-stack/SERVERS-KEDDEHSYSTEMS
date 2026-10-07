@@ -1,0 +1,1 @@
+export function render(a){const e=document.createElement("button");e.type="button";e.className="k-button";e.textContent=a.props.label||"Button";e.addEventListener("click",()=>e.dispatchEvent(new CustomEvent("keddeh-action",{bubbles:true,detail:{artifact_id:a.artifact_id,action_id:a.props.action_id||"none",input:{}}})));return e;}

@@ -1,0 +1,13 @@
+[Unit]
+Description=Reconcile KEDDEH package index without activating modules
+
+[Service]
+Type=oneshot
+User=keddeh
+Group=keddeh
+ExecStart=/usr/bin/python3 /opt/keddeh/SERVERS-KEDDEHSYSTEMS/packaging/bin/keddeh-index.py --root /opt/keddeh/SERVERS-KEDDEHSYSTEMS --receipt /var/lib/keddeh/index-verification.json
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/keddeh

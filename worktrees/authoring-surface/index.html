@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KEDDEH Workspace · Editable Runtime</title>
+<meta name="description" content="KEDDEH operator authoring surface with independently editable artifacts.">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">KEDDEH <span>WORKSPACE</span></a><div class="mode"><span id="mode-label">Read only</span><button id="admin-control">Admin control</button></div></header>
+<main id="canvas" aria-label="Editable document canvas"></main>
+<button id="add-artifact" class="add" hidden aria-label="Add artifact" title="Add artifact">+</button>
+<section id="palette" class="palette" hidden aria-label="Artifact palette"><header><h2>Add artifact</h2><button data-close="palette">Close</button></header><div id="palette-grid"></div></section>
+<aside id="inspector" class="inspector" hidden aria-label="Artifact inspector">
+<header><div><small>Artifact code stack</small><h2 id="inspector-title">Artifact</h2></div><button data-close="inspector">Close</button></header>
+<label>Properties + style + behavior JSON<textarea id="code-editor" spellcheck="false"></textarea></label>
+<div class="inspector-actions"><button id="apply-code">Apply revision</button><button id="duplicate-artifact">Duplicate</button><button id="delete-artifact" class="danger">Delete</button></div>
+<dl id="artifact-meta"></dl>
+</aside>
+<footer class="footer"><p>Source-visible authoring. Production promotion requires authenticated, revision-locked write authority.</p><div><button id="local-draft">Open local draft</button><button id="import-document">Import</button><button id="export-document">Export</button><input id="import-file" type="file" accept="application/json" hidden></div></footer>
+<div id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

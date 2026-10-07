@@ -1,0 +1,11 @@
+[package]
+name = "keddeh-module-guest"
+version = "1.0.0"
+edition = "2021"
+[[bin]]
+name = "keddeh_module_guest"
+path = "src/main.rs"
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"

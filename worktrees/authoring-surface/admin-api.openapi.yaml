@@ -1,0 +1,27 @@
+openapi: 3.1.0
+info: {title: KEDDEH Authoring API, version: 1.0.0}
+servers: [{url: /}]
+paths:
+  /health:
+    get:
+      responses:
+        "200": {description: Process health}
+  /api/document:
+    get:
+      summary: Read the authenticated administrator document
+      responses:
+        "200":
+          description: Current document
+          headers: {ETag: {schema: {type: string}}}
+        "401": {description: Authenticated administrator required}
+    put:
+      summary: Revision-locked whole-document promotion
+      parameters:
+        - {in: header, name: If-Match, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: "../../../worktrees/authoring-surface/model.schema.json"}}}
+      responses:
+        "200": {description: Promoted revision}
+        "401": {description: Authenticated administrator required}
+        "412": {description: Revision conflict}

@@ -1,0 +1,66 @@
+{
+  "schema_version": "keddeh.primitive-registry/v1",
+  "version": "1.0.0",
+  "primitives": [
+    {
+      "type": "link",
+      "index": "worktrees/primitives/link/primitive.index.json",
+      "module": "worktrees/primitives/link/render.js",
+      "stylesheet": "worktrees/primitives/link/style.css"
+    },
+    {
+      "type": "button",
+      "index": "worktrees/primitives/button/primitive.index.json",
+      "module": "worktrees/primitives/button/render.js",
+      "stylesheet": "worktrees/primitives/button/style.css"
+    },
+    {
+      "type": "execution",
+      "index": "worktrees/primitives/execution/primitive.index.json",
+      "module": "worktrees/primitives/execution/render.js",
+      "stylesheet": "worktrees/primitives/execution/style.css"
+    },
+    {
+      "type": "heading",
+      "index": "worktrees/primitives/heading/primitive.index.json",
+      "module": "worktrees/primitives/heading/render.js",
+      "stylesheet": "worktrees/primitives/heading/style.css"
+    },
+    {
+      "type": "title",
+      "index": "worktrees/primitives/title/primitive.index.json",
+      "module": "worktrees/primitives/title/render.js",
+      "stylesheet": "worktrees/primitives/title/style.css"
+    },
+    {
+      "type": "photo",
+      "index": "worktrees/primitives/photo/primitive.index.json",
+      "module": "worktrees/primitives/photo/render.js",
+      "stylesheet": "worktrees/primitives/photo/style.css"
+    },
+    {
+      "type": "container",
+      "index": "worktrees/primitives/container/primitive.index.json",
+      "module": "worktrees/primitives/container/render.js",
+      "stylesheet": "worktrees/primitives/container/style.css"
+    },
+    {
+      "type": "name",
+      "index": "worktrees/primitives/name/primitive.index.json",
+      "module": "worktrees/primitives/name/render.js",
+      "stylesheet": "worktrees/primitives/name/style.css"
+    },
+    {
+      "type": "claim",
+      "index": "worktrees/primitives/claim/primitive.index.json",
+      "module": "worktrees/primitives/claim/render.js",
+      "stylesheet": "worktrees/primitives/claim/style.css"
+    },
+    {
+      "type": "learning",
+      "index": "worktrees/primitives/learning/primitive.index.json",
+      "module": "worktrees/primitives/learning/render.js",
+      "stylesheet": "worktrees/primitives/learning/style.css"
+    }
+  ]
+}

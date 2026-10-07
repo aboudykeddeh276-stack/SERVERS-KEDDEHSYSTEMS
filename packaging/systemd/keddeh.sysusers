@@ -1,0 +1,2 @@
+u keddeh - "KEDDEH runtime service account" /var/lib/keddeh /usr/sbin/nologin
+g keddeh -
