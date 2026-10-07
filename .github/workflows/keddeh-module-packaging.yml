@@ -1,0 +1,42 @@
+name: KEDDEH module packaging
+on:
+  pull_request:
+    paths: ['packaging/**', 'worktrees/**', '.github/workflows/keddeh-module-packaging.yml']
+  push:
+    branches: ['codex/systemd-wasm-module-packaging-v1']
+    paths: ['packaging/**', '.github/workflows/keddeh-module-packaging.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 packaging/bin/keddeh-index.py --root .
+      - run: |
+          python3 -m py_compile packaging/bin/*.py
+          python3 -m unittest discover -s packaging/tests -v
+          python3 -m unittest discover -s worktrees/tests -v
+          python3 -m py_compile worktrees/authoring-surface/server.py worktrees/build_site_bundle.py
+          python3 worktrees/build_site_bundle.py --output /tmp/keddeh-workspace
+      - run: |
+          bash -n packaging/install.sh
+          systemd-analyze verify packaging/systemd/*.service packaging/systemd/*.target packaging/systemd/*.timer packaging/systemd/*.path
+      - run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in Path("packaging").rglob("*.json"):
+              json.loads(p.read_text())
+              print(p)
+          PY
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1
+      - run: cargo build --release --target wasm32-wasip1 --manifest-path packaging/wasm/guest/Cargo.toml
+      - run: cargo build --release --manifest-path packaging/wasm/host/Cargo.toml
+      - run: sha256sum target/wasm32-wasip1/release/keddeh_module_guest.wasm

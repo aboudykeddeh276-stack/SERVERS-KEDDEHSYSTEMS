@@ -1,0 +1,7 @@
+[Unit]
+Description=Watch KEDDEH installed runtime index
+[Path]
+PathChanged=/etc/keddeh/runtime.index.json
+Unit=keddeh-module-reconcile.service
+[Install]
+WantedBy=multi-user.target

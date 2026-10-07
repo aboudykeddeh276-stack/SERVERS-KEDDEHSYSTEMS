@@ -1,0 +1,17 @@
+[Unit]
+Description=KEDDEH module %i health readback
+After=keddeh-module@%i.service
+ConditionPathExists=/opt/keddeh/SERVERS-KEDDEHSYSTEMS/packaging/modules/%i/module.index.json
+
+[Service]
+Type=oneshot
+User=keddeh
+Group=keddeh
+Environment=KEDDEH_INSTALL_ROOT=/opt/keddeh/SERVERS-KEDDEHSYSTEMS
+ExecStart=/usr/bin/python3 /opt/keddeh/SERVERS-KEDDEHSYSTEMS/packaging/bin/keddeh-module-runner.py --module %i health
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/var/lib/keddeh/modules/%i

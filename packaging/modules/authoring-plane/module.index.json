@@ -1,0 +1,81 @@
+{
+  "schema_version": "keddeh.module-index/v1",
+  "module_id": "authoring-plane",
+  "display_name": "KEDDEH Editable Artifact Authoring Plane",
+  "version": "1.0.0",
+  "authority_class": "web-domain",
+  "source_paths": [
+    "worktrees/README.md",
+    "worktrees/primitives",
+    "worktrees/authoring-surface"
+  ],
+  "execution": {
+    "class": "native",
+    "activation_default": false,
+    "command": [
+      "/usr/bin/python3",
+      "worktrees/authoring-surface/server.py"
+    ],
+    "health_command": [],
+    "required_env": [
+      "KEDDEH_AUTHORING_STATE"
+    ],
+    "service_type": "simple"
+  },
+  "dependencies": [
+    "authority-root",
+    "governance-network",
+    "receipts-ledger"
+  ],
+  "systemd": {
+    "unit": "keddeh-module@.service",
+    "health_unit": "keddeh-module-health@.service",
+    "target": "keddeh-runtime.target",
+    "restart_policy": "on-failure"
+  },
+  "wasm": {
+    "abi": "wasi-preview1-command+wit-contract",
+    "world": "keddeh:runtime/keddeh-module@1.0.0",
+    "wit": "packaging/wasm/wit/keddeh-runtime.wit",
+    "adapter_artifact": "packaging/wasm/artifacts/keddeh_module_guest.wasm",
+    "sha256": null,
+    "build_status": "SOURCE_DEFINED_PENDING_CI"
+  },
+  "vfs": {
+    "read_only": [
+      "worktrees/primitives",
+      "worktrees/authoring-surface/index.html",
+      "worktrees/authoring-surface/app.js",
+      "worktrees/authoring-surface/styles.css"
+    ],
+    "read_write": [
+      "/var/lib/keddeh/modules/authoring-plane",
+      "/var/lib/keddeh/authoring"
+    ]
+  },
+  "network": {
+    "mode": "declared-native",
+    "listen": [
+      {
+        "protocol": "tcp",
+        "port": 8787,
+        "purpose": "loopback-only authenticated authoring API behind identity-enforcing proxy"
+      }
+    ],
+    "connect": []
+  },
+  "lifecycle": {
+    "preflight": "validate-index",
+    "start": "guarded-native-exec",
+    "health": "emit-index-and-receipt-readback",
+    "stop": "systemd-sigterm"
+  },
+  "evidence": {
+    "state_root_path": "/var/lib/keddeh/modules/authoring-plane/state-root.json",
+    "phase_root_path": "/var/lib/keddeh/modules/authoring-plane/phase-root.json",
+    "receipt_path": "/var/lib/keddeh/modules/authoring-plane/receipts.jsonl",
+    "generator_id": "keddeh-module-runner:authoring-plane",
+    "verifier_id": "keddeh-module-verifier:authoring-plane",
+    "promotion_status": "SOURCE_DEFINED_PENDING_BUILD_AND_RUNTIME_READBACK"
+  }
+}

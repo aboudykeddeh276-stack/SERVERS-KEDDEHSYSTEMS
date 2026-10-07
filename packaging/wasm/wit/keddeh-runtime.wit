@@ -1,0 +1,11 @@
+package keddeh:runtime@1.0.0;
+interface lifecycle {
+  record request { module-id: string, action: string, payload-json: string, state-root: option<string>, phase-root: option<string> }
+  record response { status: string, receipt-json: string, next-state-root: string, next-phase-root: string }
+  invoke: func(request: request) -> result<response, string>;
+}
+interface evidence {
+  record receipt { module-id: string, generator-id: string, verifier-id: string, observed-ns: u64, state-root: string, phase-root: string, status: string }
+  verify: func(receipt: receipt) -> result<bool, string>;
+}
+world keddeh-module { export lifecycle; export evidence; }

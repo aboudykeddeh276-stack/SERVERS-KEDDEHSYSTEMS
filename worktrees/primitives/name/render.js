@@ -1,0 +1,1 @@
+export function render(a){const e=document.createElement("article");e.className="k-knowledge k-name";const h=document.createElement("h3");h.textContent=a.props.name||"Unnamed";const p=document.createElement("p");p.textContent=a.props.description||"";e.append(h,p);const slot=document.createElement("div");slot.dataset.childSlot=a.artifact_id;e.append(slot);return e;}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keddeh.com/schemas/editable-document-v1.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "document_id",
+    "revision",
+    "title",
+    "artifacts",
+    "audit"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "keddeh.editable-document/v1"
+    },
+    "document_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "type",
+          "parent_id",
+          "order",
+          "revision",
+          "props",
+          "style",
+          "behavior"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "link",
+              "button",
+              "execution",
+              "heading",
+              "title",
+              "photo",
+              "container",
+              "name",
+              "claim",
+              "learning"
+            ]
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "order": {
+            "type": "integer"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "props": {
+            "type": "object"
+          },
+          "style": {
+            "type": "object"
+          },
+          "behavior": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "audit": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

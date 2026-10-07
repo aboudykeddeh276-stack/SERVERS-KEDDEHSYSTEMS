@@ -1,0 +1,1 @@
+export function render(a){const e=document.createElement("section");e.className="k-container layout-"+(a.props.layout||"stack");e.setAttribute("aria-label",a.props.label||"Content container");const slot=document.createElement("div");slot.className="k-children";slot.dataset.childSlot=a.artifact_id;e.append(slot);return e;}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "keddeh.ui-primitive/v1",
+  "primitive": "photo",
+  "version": "1.0.0",
+  "html_tag": "figure",
+  "identity": {
+    "required": [
+      "artifact_id",
+      "revision"
+    ],
+    "child_links_are_independent": true
+  },
+  "properties": {
+    "src": "uri",
+    "alt": "string",
+    "caption": "string"
+  },
+  "allowed_children": [],
+  "code_stack": {
+    "manifest": "worktrees/primitives/photo/primitive.index.json",
+    "renderer": "worktrees/primitives/photo/render.js",
+    "styles": "worktrees/primitives/photo/style.css"
+  },
+  "editing": {
+    "admin_required": true,
+    "raw_stack_exposed": true,
+    "production_write_requires_etag": true
+  },
+  "security": {
+    "arbitrary_eval": false,
+    "inline_script": false,
+    "unsafe_html": false
+  }
+}

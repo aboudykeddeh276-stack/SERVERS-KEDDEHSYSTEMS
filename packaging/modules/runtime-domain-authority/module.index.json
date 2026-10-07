@@ -1,0 +1,89 @@
+{
+  "schema_version": "keddeh.module-index/v1",
+  "module_id": "runtime-domain-authority",
+  "display_name": "KEX Domain Authority Runtime",
+  "version": "1.0.0",
+  "authority_class": "server-runtime",
+  "source_paths": [
+    "runtime/domain_authority/kex_registrar_service.py",
+    "runtime/domain_authority/kex_dns.py",
+    "runtime/domain_authority/cross_sector_handler.py",
+    "runtime/domain_authority/KEX_DA_HOST_BIND_R1.json",
+    "runtime/domain_authority/KEX_DA_SERVER_QUALIFICATION_R1.json",
+    "runtime/domain_authority/KEX_DA_BENCHMARK_QUALIFICATION_R1.md"
+  ],
+  "execution": {
+    "class": "native",
+    "activation_default": false,
+    "command": [
+      "/usr/bin/python3",
+      "runtime/domain_authority/kex_dns.py"
+    ],
+    "health_command": [],
+    "required_env": [
+      "KEX_REGISTRAR_DB"
+    ],
+    "service_type": "simple"
+  },
+  "dependencies": [
+    "authority-root",
+    "governance-network"
+  ],
+  "systemd": {
+    "unit": "keddeh-module@.service",
+    "health_unit": "keddeh-module-health@.service",
+    "target": "keddeh-runtime.target",
+    "restart_policy": "on-failure"
+  },
+  "wasm": {
+    "abi": "wasi-preview1-command+wit-contract",
+    "world": "keddeh:runtime/keddeh-module@1.0.0",
+    "wit": "packaging/wasm/wit/keddeh-runtime.wit",
+    "adapter_artifact": "packaging/wasm/artifacts/keddeh_module_guest.wasm",
+    "sha256": null,
+    "build_status": "SOURCE_DEFINED_PENDING_CI"
+  },
+  "vfs": {
+    "read_only": [
+      "runtime/domain_authority/kex_registrar_service.py",
+      "runtime/domain_authority/kex_dns.py",
+      "runtime/domain_authority/cross_sector_handler.py",
+      "runtime/domain_authority/KEX_DA_HOST_BIND_R1.json",
+      "runtime/domain_authority/KEX_DA_SERVER_QUALIFICATION_R1.json",
+      "runtime/domain_authority/KEX_DA_BENCHMARK_QUALIFICATION_R1.md"
+    ],
+    "read_write": [
+      "/var/lib/keddeh/modules/runtime-domain-authority"
+    ]
+  },
+  "network": {
+    "mode": "declared-native",
+    "listen": [
+      {
+        "protocol": "udp",
+        "port": 9053,
+        "purpose": "staged authoritative DNS"
+      },
+      {
+        "protocol": "tcp",
+        "port": 9053,
+        "purpose": "staged authoritative DNS"
+      }
+    ],
+    "connect": []
+  },
+  "lifecycle": {
+    "preflight": "validate-index",
+    "start": "guarded-native-exec",
+    "health": "emit-index-and-receipt-readback",
+    "stop": "systemd-sigterm"
+  },
+  "evidence": {
+    "state_root_path": "/var/lib/keddeh/modules/runtime-domain-authority/state-root.json",
+    "phase_root_path": "/var/lib/keddeh/modules/runtime-domain-authority/phase-root.json",
+    "receipt_path": "/var/lib/keddeh/modules/runtime-domain-authority/receipts.jsonl",
+    "generator_id": "keddeh-module-runner:runtime-domain-authority",
+    "verifier_id": "keddeh-module-verifier:runtime-domain-authority",
+    "promotion_status": "SOURCE_DEFINED_PENDING_BUILD_AND_RUNTIME_READBACK"
+  }
+}

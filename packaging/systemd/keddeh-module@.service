@@ -1,0 +1,42 @@
+[Unit]
+Description=KEDDEH indexed module %i
+Documentation=file:/opt/keddeh/SERVERS-KEDDEHSYSTEMS/packaging/README.md
+Requires=keddeh-runtime-preflight.service
+After=keddeh-runtime-preflight.service network-online.target
+ConditionPathExists=/opt/keddeh/SERVERS-KEDDEHSYSTEMS/packaging/modules/%i/module.index.json
+
+[Service]
+Type=exec
+User=keddeh
+Group=keddeh
+Environment=KEDDEH_INSTALL_ROOT=/opt/keddeh/SERVERS-KEDDEHSYSTEMS
+EnvironmentFile=-/etc/keddeh/modules/%i.env
+ExecStartPre=/usr/bin/python3 /opt/keddeh/SERVERS-KEDDEHSYSTEMS/packaging/bin/keddeh-module-runner.py --module %i validate
+ExecStart=/usr/bin/python3 /opt/keddeh/SERVERS-KEDDEHSYSTEMS/packaging/bin/keddeh-module-runner.py --module %i start
+Restart=on-failure
+RestartSec=3s
+TimeoutStartSec=90s
+TimeoutStopSec=30s
+KillMode=mixed
+UMask=0027
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+ReadWritePaths=/var/lib/keddeh/modules/%i /run/keddeh
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=keddeh-runtime.target

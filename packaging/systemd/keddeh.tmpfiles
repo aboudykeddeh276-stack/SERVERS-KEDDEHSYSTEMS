@@ -1,0 +1,4 @@
+d /var/lib/keddeh 0750 keddeh keddeh -
+d /var/lib/keddeh/modules 0750 keddeh keddeh -
+d /run/keddeh 0750 keddeh keddeh -
+d /var/lib/keddeh/authoring 0750 keddeh keddeh -

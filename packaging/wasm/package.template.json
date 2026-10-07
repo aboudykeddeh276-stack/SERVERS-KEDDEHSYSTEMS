@@ -1,0 +1,17 @@
+{
+  "schema_version": "keddeh.wasm-package/v1",
+  "module_id": "MODULE_ID",
+  "artifact": "packaging/wasm/artifacts/keddeh_module_guest.wasm",
+  "sha256": null,
+  "abi": "wasi-preview1-command+wit-contract",
+  "wit_world": "keddeh:runtime/keddeh-module@1.0.0",
+  "entry_protocol": "stdin-request/stdout-receipt-json-v1",
+  "preopens": [
+    {
+      "host": "/var/lib/keddeh/modules/MODULE_ID",
+      "guest": "/state",
+      "mode": "rw"
+    }
+  ],
+  "network": "none"
+}
